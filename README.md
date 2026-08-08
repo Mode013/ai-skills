@@ -6,6 +6,57 @@ Upstream commit: [84fdeffd12f2ee307994d1eb6feb48173b6e0502](https://github.com/m
 
 These are modular skills, not a mandatory pipeline. Invoke only the skill needed for the current job.
 
+## Installation
+
+[Node.js](https://nodejs.org/) with `npm`/`npx` is required. Installation uses the open-source [Skills CLI](https://github.com/vercel-labs/skills); cloning this repository is not necessary.
+
+Install all skills globally for every supported agent:
+
+```sh
+npx skills@latest add alvnukov/ai-skills --global --all
+```
+
+Install all skills globally for selected agents only:
+
+```sh
+npx skills@latest add alvnukov/ai-skills \
+  --global \
+  --skill '*' \
+  --agent codex \
+  --agent claude-code \
+  --agent cursor \
+  --yes
+```
+
+Install selected skills for one agent:
+
+```sh
+npx skills@latest add alvnukov/ai-skills \
+  --global \
+  --skill diagnosing-bugs \
+  --skill code-review \
+  --agent codex \
+  --yes
+```
+
+For a project-local installation, run the command from the project root and omit `--global`:
+
+```sh
+npx skills@latest add alvnukov/ai-skills \
+  --skill '*' \
+  --agent codex \
+  --yes
+```
+
+Inspect installed global skills and update them later:
+
+```sh
+npx skills@latest list --global
+npx skills@latest update --global
+```
+
+Start a new agent session after installation so the agent reloads its skill catalog. Agent identifiers supported by the CLI are documented in the [Skills CLI README](https://github.com/vercel-labs/skills#supported-agents).
+
 ## Included
 
 - Discovery: `grill-me`, `grilling`
