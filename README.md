@@ -4,6 +4,8 @@ A curated, lightly adapted snapshot of [mattpocock/skills](https://github.com/ma
 
 Upstream commit: [84fdeffd12f2ee307994d1eb6feb48173b6e0502](https://github.com/mattpocock/skills/commit/84fdeffd12f2ee307994d1eb6feb48173b6e0502) (2026-08-06). License: MIT.
 
+`investigate-codebase` is imported from [Data-System-School/agent-skills](https://github.com/Data-System-School/agent-skills) (MIT).
+
 These are modular skills, not a mandatory pipeline. Invoke only the skill needed for the current job.
 
 ## Installation
@@ -63,6 +65,7 @@ Start a new agent session after installation so the agent reloads its skill cata
 - Specification and planning: `to-spec`, `to-tickets`
 - Delivery and review: `tdd`, `implement`, `code-review`
 - Debugging: `diagnosing-bugs`
+- Investigation: `investigate-codebase`
 - Architecture: `codebase-design`, `domain-modeling`, `improve-codebase-architecture`
 - Agent instructions: `writing-for-agents`
 
