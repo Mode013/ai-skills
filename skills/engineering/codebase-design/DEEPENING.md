@@ -8,7 +8,7 @@ When assessing a candidate for deepening, classify its dependencies. The categor
 
 ### 1. In-process
 
-Pure computation, in-memory state, no I/O. Always deepenable — merge the modules and test through the new interface directly. No adapter needed.
+Pure computation, in-memory state, no I/O. Consider merging only when shared responsibility or coupling justifies it; absence of I/O alone is not a reason. Test the resulting behavior through the appropriate interface.
 
 ### 2. Local-substitutable
 
@@ -26,12 +26,13 @@ Third-party services (Stripe, Twilio, etc.) you don't control. The deepened modu
 
 ## Seam discipline
 
-- **One adapter means a hypothetical seam. Two adapters means a real one.** Don't introduce a port unless at least two adapters are justified (typically production + test). A single-adapter seam is just indirection.
+- **Justify each port.** Production and test adapters are useful evidence of variation; a stable contract, ownership boundary, or isolation requirement can also justify a single-adapter port. Avoid indirection with no concrete benefit.
 - **Internal seams vs external seams.** A deep module can have internal seams (private to its implementation, used by its own tests) as well as the external seam at its interface. Don't expose internal seams through the interface just because tests use them.
 
-## Testing strategy: replace, don't layer
+## Testing strategy: preserve behavioral coverage
 
-- Old unit tests on shallow modules become waste once tests at the deepened module's interface exist — delete them.
+- Before replacing old tests, map their meaningful scenarios and assertions to the new interface tests. Keep unique regression and boundary cases. Remove a test only after demonstrating that its checks are preserved elsewhere or its requirement no longer applies; explain the evidence first. A higher-level passing test alone is not enough.
+- For consequential behavior, use a relevant negative control or mutation to confirm that the replacement test detects the original fault.
 - Write new tests at the deepened module's interface. The **interface is the test surface**.
 - Tests assert on observable outcomes through the interface, not internal state.
 - Tests should survive internal refactors — they describe behaviour, not implementation. If a test has to change when the implementation changes, it's testing past the interface.

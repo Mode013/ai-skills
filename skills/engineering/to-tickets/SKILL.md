@@ -7,7 +7,7 @@ description: Break a plan, spec, or the current conversation into a set of trace
 
 Break a plan, spec, or conversation into a set of **tickets** — tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-Use a configured issue tracker when one is available. Otherwise publish tickets as local files; do not invent tracker configuration or label vocabulary.
+Use the destination authorized by the user. A configured tracker alone does not authorize publication; otherwise save tickets as local files. Preserve the existing label vocabulary.
 
 ## Process
 
@@ -19,7 +19,7 @@ Work from whatever is already in the conversation context. If the user passes a 
 
 If you have not already explored the codebase, do so to understand the current state of the code. Ticket titles and descriptions should use the project's domain glossary vocabulary, and respect ADRs in the area you're touching.
 
-Look for opportunities to prefactor the code to make the implementation easier. "Make the change easy, then make the easy change."
+Propose prefactoring only when a concrete dependency or verification constraint prevents a small, safe implementation. Explain why it is necessary; otherwise keep the existing structure.
 
 ### 3. Draft vertical slices
 
@@ -30,7 +30,7 @@ Break the work into **tracer bullet** tickets.
 - Each slice cuts a narrow but COMPLETE path through every layer (schema, API, UI, tests) — vertical, NOT a horizontal slice of one layer
 - A completed slice is demoable or verifiable on its own
 - Each slice is sized to fit in a single fresh context window
-- Any prefactoring should be done first
+- Necessary prefactoring is its own verifiable prerequisite; avoid speculative cleanup.
 
 </vertical-slice-rules>
 
@@ -52,14 +52,14 @@ Ask the user:
 - Are the blocking edges correct — does each ticket only depend on tickets that genuinely gate it?
 - Should any tickets be merged or split further?
 
-Iterate until the user approves the breakdown.
+Ask only about unresolved decisions that materially affect scope or dependencies. Reuse approval already given for this breakdown and destination; otherwise obtain approval before publishing the proposed breakdown.
 
 ### 5. Publish the tickets to the configured tracker
 
 Publish the approved tickets to the configured destination. If no issue tracker is configured, use local files. The tickets are the same either way; only the shape of the blocking edges changes:
 
 - **Local files** → write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first). Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below — one ticket per file, never a single combined file.
-- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply the `ready-for-agent` triage label unless instructed otherwise — the tickets are agent-grabbable by construction.
+- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply the `ready-for-agent` triage label only when it exists and the ticket has sufficient agreed acceptance criteria.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 

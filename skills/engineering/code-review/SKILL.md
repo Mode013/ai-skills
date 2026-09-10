@@ -1,26 +1,29 @@
 ---
 name: code-review
-description: Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes — Standards (does the code follow this repo's documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to "review since X".
+description: Review a PR, branch, commit range, or local work-in-progress for correctness, regressions, specification fit, and repository standards. Use when the user asks for a code review or to review changes since a reference.
 ---
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Review the requested changes through three lenses:
 
-- **Standards** — does the code conform to this repo's documented coding standards?
-- **Spec** — does the code faithfully implement the originating issue / spec?
+- **Correctness** — reachable bugs, regressions, broken contracts, and security or data-integrity failures.
+- **Spec** — missing, incorrect, or unrequested behavior relative to the agreed requirements.
+- **Standards** — violations of documented repository conventions and consequential design problems.
 
-Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
+Correctness applies even when no separate spec or standards document exists.
 
 Use the repository's configured issue-tracker workflow when one exists. Otherwise use an available platform connector or a spec supplied by the user; do not invent tracker configuration.
 
 ## Process
 
-### 1. Pin the fixed point
+### 1. Pin the review scope
 
-Whatever the user said is the fixed point — a commit SHA, branch name, tag, `main`, `HEAD~5`, etc. If they didn't specify one, ask for it.
+Inspect working-tree status and use the user's requested mode:
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+- **Local changes:** include staged and unstaged changes with `git diff HEAD -- <paths>`, inspect `git diff --cached -- <paths>` and `git diff -- <paths>` when they differ, and read in-scope new files listed by `git ls-files --others --exclude-standard -- <paths>`. An empty tracked diff does not exclude new files. On an unborn branch, use the index diff without `HEAD` plus the working-tree diff and new files.
+- **PR or branch:** resolve the intended base from the request or PR metadata, pin base and head to commit SHAs, and compare the merge base to the pinned head. Use `git log <base-sha>..<head-sha> --oneline` for intent evidence. Keep unrelated local changes outside this review.
+- **Exact revisions:** when the user requests two snapshots or a particular commit, compare those revisions directly rather than silently changing the comparison to a merge base.
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here — not inside two parallel sub-agents.
+For an unspecified request, local changes imply a local review; otherwise use an established PR base. Ask only when the intended scope remains materially ambiguous. Quote refs and paths when constructing commands. A bad ref is a blocker; an empty review is valid only after checking every in-scope source above. Report the chosen revisions and local file scope. Recheck status/diffs before finishing if files may have changed during the review.
 
 ### 2. Identify the spec source
 
@@ -29,13 +32,13 @@ Look for the originating spec, in this order:
 1. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch them through the repository's configured workflow or an available platform connector.
 2. A path the user passed as an argument.
 3. A spec file under `docs/`, `specs/`, or `.scratch/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+4. Use agreed requirements from the conversation. If none are available, report "no spec available" and continue Correctness and Standards using public contracts, existing callers, tests, and stable prior behavior. Ask only if missing intent prevents judging a material finding.
 
 ### 3. Identify the standards sources
 
 Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.
 
-On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
+The **smell baseline** below is an optional set of Fowler design heuristics (_Refactoring_, ch.3). Use it when a changed design causes concrete maintenance or correctness risk; it is not a quota of findings. Two rules bind it:
 
 - **The repo overrides.** A documented repo standard always wins; where it endorses something the baseline would flag, suppress the smell.
 - **Always a judgement call.** Each smell is a labelled heuristic ("possible Feature Envy"), never a hard violation — and, like any standard here, skip anything tooling already enforces.
@@ -55,33 +58,16 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 - **Middle Man** — a class or function that mostly just delegates onward. → cut it, call the real target direct.
 - **Refused Bequest** — a subclass or implementer that ignores or overrides most of what it inherits. → drop the inheritance, use composition.
 
-### 4. Spawn both sub-agents in parallel
+### 4. Verify the findings
 
-**Standards sub-agent prompt** — include:
+Trace changed behavior into relevant callers and dependencies. Look for a concrete input and reachable path that violates an independent contract, not merely a suspicious diff. Prioritize permission checks, state changes, failure handling, compatibility, retries, and concurrency where the change exposes those risks.
 
-- The full diff command and commit list.
-- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full — the sub-agent has no other access to it.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+Run the cheapest safe check that could disprove each important finding. Distinguish observed failures from source-based conclusions and unavailable checks. Existing tests are evidence, not proof of complete correctness. If available, consult `$investigate-codebase` in VERIFY mode for complex verification; otherwise use the independent contracts and focused checks described here.
 
-**Spec sub-agent prompt** — include:
-
-- The diff command and commit list.
-- The path or fetched contents of the spec.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
-
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+Work directly for small reviews. For substantial independent review areas, delegate when available and permitted. Give each reviewer the same pinned scope, in-scope new files, requirements, standards, and necessary source context; withhold the author's conclusions so they can check independently. If delegation is unavailable, apply the lenses sequentially. Never require a commit to make local work reviewable.
 
 ### 5. Aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+Reconcile findings against the actual source and contracts; remove duplicates and unsupported claims. Order actionable findings by consequence, retaining their Correctness, Spec, or Standards labels. For each, give the location, triggering scenario, impact, and evidence or verification limit. Keep optional design suggestions separate from defects.
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
-
-## Why two axes
-
-A change can pass one axis and fail the other:
-
-- Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
-- Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
-
-Reporting them separately stops one axis from masking the other.
+Finish with the review scope, checks actually run, and material unknowns. State when no actionable findings were found. Missing spec or unavailable runtime checks limit the conclusion; they do not imply the change is correct.

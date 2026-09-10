@@ -76,5 +76,12 @@ Start a new agent session after installation so the agent reloads its skill cata
 - Added Codex default prompts.
 - Made issue-tracker integration optional, with standalone local-file fallbacks.
 - Made commits opt-in unless the repository workflow requires them.
+- Included staged, unstaged, and new files in local reviews, with correctness checks even without a separate spec.
+- Preserved meaningful regression tests during architectural changes.
+- Scoped diagnosis, testing, interviews, and delegation to the task; reused existing decisions and authorization.
 
-Each skill otherwise retains its upstream structure and bundled references.
+The skills retain their upstream layout and references with these behavioral adaptations.
+
+## Evaluation
+
+See [evals/README.md](evals/README.md) for the paired evaluation protocol and [evals/cases.md](evals/cases.md) for the initial regression scenarios. These check outcomes and unnecessary work, not exact instruction wording. Recorded smoke runs demonstrate only the tested cases; they are not a general effectiveness benchmark.

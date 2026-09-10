@@ -5,17 +5,15 @@ description: Turn the current conversation into a standalone spec, optionally pu
 
 This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user — just synthesize what you already know.
 
-Use a configured issue tracker when one is available. Otherwise write a standalone spec under `specs/` or to the path requested by the user; do not invent tracker configuration.
+Use the destination authorized by the user. An available tracker is not by itself authorization to publish; otherwise save the draft under `specs/` or to the requested local path.
 
 ## Process
 
 1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
 
-2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
+2. Identify existing test interfaces that can verify the agreed behavior with reliable, focused checks. Reuse prior testing decisions. Record a new interface as a proposal when it requires an unresolved design decision; keep open questions explicit rather than inventing answers or starting a new interview.
 
-Check with the user that these seams match their expectations.
-
-3. Write the spec using the template below. Publish it to the configured issue tracker when available; otherwise save it under `specs/<feature-slug>.md` or to the path requested by the user. Apply a `ready-for-agent` label only when that label exists.
+3. Write the spec using the relevant sections below. Separate agreed requirements from assumptions and open decisions; do not add features to make the document longer. Publish only to the authorized destination; otherwise save under `specs/<feature-slug>.md`. Apply a `ready-for-agent` label only when it exists and unresolved decisions do not block implementation.
 
 <spec-template>
 
@@ -29,7 +27,7 @@ The solution to the problem, from the user's perspective.
 
 ## User Stories
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+Include only distinct, agreed user needs. Where a user story clarifies the requirement, use:
 
 1. As an <actor>, I want a <feature>, so that <benefit>
 
@@ -37,7 +35,15 @@ A LONG, numbered list of user stories. Each user story should be in the format o
 1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
 </user-story-example>
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+Use as many stories as the agreed scope needs; a small change may need only one.
+
+## Acceptance Criteria
+
+State observable outcomes for the agreed requirements, including relevant failure cases and invariants. Link each criterion to a requirement and a feasible check. Keep unconfirmed behavior under Open Questions rather than presenting it as accepted scope.
+
+## Assumptions and Open Questions
+
+List only uncertainties that affect implementation or verification, distinguishing reasonable assumptions from decisions requiring user input.
 
 ## Implementation Decisions
 
