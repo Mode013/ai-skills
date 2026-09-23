@@ -39,9 +39,21 @@ Apply the **deletion test** to anything you suspect is shallow: would deleting i
 
 ### 2. Present candidates
 
-Use a concise text comparison for a small finding. When before/after visuals materially clarify several candidates or the user requests them, write an HTML report to the OS temp directory so nothing lands in the repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%` on Windows), and write to `<tmpdir>/architecture-review-<timestamp>.html` so each run gets a fresh file. Open it for the user — `xdg-open <path>` on Linux, `open <path>` on macOS, `start <path>` on Windows — and tell them the absolute path.
+Use a concise text comparison for a small finding. When before/after visuals
+materially clarify several candidates or the user requests them, write a
+self-contained HTML report to the OS temp directory so nothing lands in the
+repo. Resolve the temp dir from `$TMPDIR`, falling back to `/tmp` (or `%TEMP%`
+on Windows), and write to `<tmpdir>/architecture-review-<timestamp>.html` so
+each run gets a fresh file. Use restrictive file permissions where supported.
+Open it locally for the user — `xdg-open <path>` on Linux, `open <path>` on
+macOS, `start <path>` on Windows — and tell them the absolute path.
 
-The optional scaffold uses **Tailwind via CDN** and **Mermaid via CDN**, so it requires network access. For an offline report, use inline CSS and SVG instead. Use diagrams where a graph/flow/sequence reliably communicates the structure. Mix Mermaid with hand-crafted CSS/SVG visuals — use Mermaid when relationships are graph-shaped (call graphs, dependencies, sequences), and hand-built divs/SVG when you want something more editorial (mass diagrams, cross-sections, collapse animations). Each candidate gets a **before/after visualisation**. Be visual.
+The report must work with networking disabled. Use only inline CSS, semantic
+HTML, and inline static SVG. Do not include JavaScript, remote imports,
+stylesheets, fonts, images, analytics, or any other external resource. Escape
+repository-derived text before inserting it into HTML. Use static SVG for
+graphs, flows, and sequences and hand-built HTML/CSS for editorial visuals.
+Each candidate gets a **before/after visualisation**.
 
 For each candidate, render a card with:
 
