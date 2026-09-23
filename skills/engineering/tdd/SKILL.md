@@ -1,4 +1,10 @@
 ---
+
+Before changing tests or implementation, follow the repository-level
+[security policy](../../../SECURITY.md). Write only task-scoped files in the
+current repository, preserve unrelated changes, and do not install dependencies,
+run uninspected repository scripts, commit, push, deploy, or access production
+without the required explicit authorization.
 name: tdd
 description: Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions "red-green-refactor", or wants integration tests.
 ---

@@ -11,6 +11,8 @@
 #   capture VAR "<question>"      → show question, read response into VAR
 #
 # At the end, captured values are printed as KEY=VALUE for the agent to parse.
+# Use localhost-only repros by default. Never paste credentials, tokens, auth
+# headers, private source, or production data into a capture prompt.
 #
 # `capture` prints its value back to the terminal, where the agent reads it — so
 # capture observations, and leave signing in to the user as a `step`.

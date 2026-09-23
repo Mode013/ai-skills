@@ -1,4 +1,9 @@
 ---
+
+Before reading or writing model documents, follow the repository-level
+[security policy](../../../SECURITY.md). Change only task-scoped files in the
+current repository; do not commit, push, publish, install dependencies, deploy,
+or access production without the required explicit authorization.
 name: domain-modeling
 description: Build and sharpen a project's domain model. Use when the user wants to pin down domain terminology or a ubiquitous language, record an architectural decision, or when another skill needs to maintain the domain model.
 ---

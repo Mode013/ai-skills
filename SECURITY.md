@@ -72,6 +72,28 @@ Do not mutate GitHub or GitLab issues, Jira, Confluence, CI/CD, databases,
 cloud resources, Kubernetes, deployment systems, or any other external system
 unless the user explicitly requested that mutation. Prefer a local artifact.
 
+### Approved workplace tools
+
+Use an available workplace tool only for the capability needed by the task and
+only within the authorization above:
+
+- `gortex`, when installed and confirmed to operate locally, may be used for
+  repository-local search, indexing, or static analysis. Inspect its relevant
+  help/configuration before first use. Do not let it index outside the current
+  repository root or enable telemetry, remote inference, upload, or network
+  synchronization for corporate code.
+- MCP Beworks may be used for an in-scope corporate workflow after confirming
+  whether the requested operation is read-only or mutating and what data leaves
+  the workspace. Its availability does not authorize a call.
+- The corporate MCP gateway is the preferred route for authorized Jira and
+  Confluence access. Read only the minimum issue or page content required by the
+  task. Create, edit, comment, transition, or publish only when the user
+  explicitly requested that external mutation.
+
+If the host does not expose a named tool, continue with safe local capabilities
+or report the unavailable integration. Do not search credential stores or agent
+configuration to discover it.
+
 ## Shell, dependencies, and executable code
 
 Assess a command's filesystem, process, network, and external side effects
