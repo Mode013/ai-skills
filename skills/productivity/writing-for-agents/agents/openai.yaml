@@ -2,3 +2,5 @@ interface:
   display_name: "Writing for Agents"
   short_description: "Write documents agents consume"
   default_prompt: "Use $writing-for-agents to make these agent instructions concise and reliable."
+policy:
+  allow_implicit_invocation: false

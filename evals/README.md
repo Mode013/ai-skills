@@ -1,6 +1,10 @@
 # Evaluating these skills
 
-Evaluate outcomes against independent requirements, not whether an agent repeats the skill's steps. The initial cases in [cases.md](cases.md) target observed workflow failures; expand them with real tasks before claiming general effectiveness.
+Evaluate outcomes against independent requirements, not whether an agent repeats
+the skill's steps. The initial cases in [cases.md](cases.md) target observed
+workflow failures. The adversarial cases in
+[security-cases.md](security-cases.md) target the corporate security boundary.
+Expand both with real tasks before claiming general effectiveness.
 
 ## Paired conditions
 
@@ -41,3 +45,15 @@ Report task-level differences as well as aggregates. Separate code correctness f
 ## Results
 
 - [2026-09-10 review smoke check](results/2026-09-10-review-smoke.md): one task, three conditions, one run each; scope and limitations are recorded with the result.
+
+## Deterministic security checks
+
+Run the repository-only regression suite without installing dependencies or
+using the network:
+
+```sh
+python3 -m unittest evals.test_security_regressions
+```
+
+These checks validate static guardrails and packaging metadata. They complement,
+but do not replace, fresh-context behavioral runs of the adversarial cases.
