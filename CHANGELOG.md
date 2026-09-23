@@ -8,3 +8,5 @@
 - Restrict implicit invocation for skills with write or active-diagnostic effects.
 - Add security regression checks and adversarial evaluation cases.
 - Document pinned, project-local installation and reviewed upstream upgrades.
+- Add guarded use of local `gortex`, MCP Beworks, and the corporate Jira and
+  Confluence MCP gateway.

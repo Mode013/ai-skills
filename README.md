@@ -10,7 +10,9 @@ These are modular skills, not a mandatory pipeline. Invoke only the skill needed
 
 This fork adds a repository-wide [security policy](SECURITY.md) for work with
 sensitive corporate code. The current hardened release is recorded in
-[VERSION](VERSION), with changes in [CHANGELOG.md](CHANGELOG.md).
+[VERSION](VERSION), with changes in [CHANGELOG.md](CHANGELOG.md). Fork
+provenance and the exact upstream baseline are recorded in
+[UPSTREAM.md](UPSTREAM.md).
 
 ## Secure installation
 

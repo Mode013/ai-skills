@@ -84,9 +84,12 @@ class SecurityPolicyTests(unittest.TestCase):
 
     def test_supply_chain_instructions_do_not_use_latest(self) -> None:
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        provenance = (ROOT / "UPSTREAM.md").read_text(encoding="utf-8")
         self.assertNotRegex(readme, r"npx\s+skills@latest")
         self.assertIn("git fetch upstream", readme)
         self.assertIn("v1.0.0-corp.1", readme)
+        self.assertIn("19904dd0f652630fe532e847f2cc02c20cd53274", provenance)
+        self.assertIn("alvnukov/ai-skills", provenance)
 
     def test_adversarial_evals_cover_required_scenarios(self) -> None:
         cases = (ROOT / "evals" / "security-cases.md").read_text(
