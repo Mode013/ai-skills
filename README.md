@@ -1,4 +1,4 @@
-# AI engineering skills
+# AI engineering skills — corporate hardened fork
 
 A curated, lightly adapted snapshot of [mattpocock/skills](https://github.com/mattpocock/skills) for software development, DevOps work, debugging, and architecture.
 
@@ -8,56 +8,66 @@ Upstream commit: [84fdeffd12f2ee307994d1eb6feb48173b6e0502](https://github.com/m
 
 These are modular skills, not a mandatory pipeline. Invoke only the skill needed for the current job.
 
-## Installation
+This fork adds a repository-wide [security policy](SECURITY.md) for work with
+sensitive corporate code. The current hardened release is recorded in
+[VERSION](VERSION), with changes in [CHANGELOG.md](CHANGELOG.md).
 
-[Node.js](https://nodejs.org/) with `npm`/`npx` is required. Installation uses the open-source [Skills CLI](https://github.com/vercel-labs/skills); cloning this repository is not necessary.
+## Secure installation
 
-Install all skills globally for every supported agent:
+[Node.js](https://nodejs.org/) with `npm`/`npx` is required when using the
+open-source [Skills CLI](https://github.com/vercel-labs/skills). For corporate
+use, install only reviewed skills into the project and pin this repository to a
+reviewed tag or full commit SHA. Review the CLI version too; do not use
+`npx ...@latest` as the trust anchor.
+
+Clone and check out the reviewed hardened release:
 
 ```sh
-npx skills@latest add alvnukov/ai-skills --global --all
+git clone https://github.com/Mode013/ai-skills.git
+cd ai-skills
+git checkout v1.0.0-corp.1
 ```
 
-Install all skills globally for selected agents only:
+From the target project root, install selected skills from that pinned local
+checkout. Pin the Skills CLI to the version your organization reviewed:
 
 ```sh
-npx skills@latest add alvnukov/ai-skills \
-  --global \
-  --skill '*' \
-  --agent codex \
-  --agent claude-code \
-  --agent cursor \
-  --yes
-```
-
-Install selected skills for one agent:
-
-```sh
-npx skills@latest add alvnukov/ai-skills \
-  --global \
-  --skill diagnosing-bugs \
+npx skills@<reviewed-version> add /absolute/path/to/ai-skills \
+  --skill investigate-codebase \
   --skill code-review \
-  --agent codex \
   --yes
 ```
 
-For a project-local installation, run the command from the project root and omit `--global`:
+If your reviewed CLI supports Git sources pinned to a tag or commit, the
+equivalent source is:
 
 ```sh
-npx skills@latest add alvnukov/ai-skills \
-  --skill '*' \
-  --agent codex \
+npx skills@<reviewed-version> add Mode013/ai-skills@v1.0.0-corp.1 \
+  --skill investigate-codebase \
   --yes
 ```
 
-Inspect installed global skills and update them later:
+Exact source syntax can vary by CLI version. Confirm it with the documentation
+for the reviewed CLI release. Avoid `--global`, `--all`, moving branches, and
+automatic updates for sensitive projects. Start a new agent session after
+installation so the catalog reloads.
 
-```sh
-npx skills@latest list --global
-npx skills@latest update --global
-```
+## Safe upstream upgrades
 
-Start a new agent session after installation so the agent reloads its skill catalog. Agent identifiers supported by the CLI are documented in the [Skills CLI README](https://github.com/vercel-labs/skills#supported-agents).
+Updates are deliberate reviews, not automatic pulls from `main`:
+
+1. `git fetch upstream --tags --prune`
+2. Pin the candidate upstream SHA; never use `latest` as the reviewed revision.
+3. Review `git diff <reviewed-upstream-sha>..<candidate-upstream-sha>` with
+   special attention to executable instructions, network access, dependencies,
+   generated artifacts, and `agents/openai.yaml`.
+4. Run the security regression checks and adversarial evals.
+5. Merge or cherry-pick the reviewed change into a hardening branch.
+6. Reconcile the diff against this policy, create a new versioned commit/tag,
+   and reinstall only after review.
+
+The original source remains configured as the `upstream` remote; the corporate
+fork uses `origin`.
 
 ## Included
 
@@ -79,6 +89,9 @@ Start a new agent session after installation so the agent reloads its skill cata
 - Included staged, unstaged, and new files in local reviews, with correctness checks even without a separate spec.
 - Preserved meaningful regression tests during architectural changes.
 - Scoped diagnosis, testing, interviews, and delegation to the task; reused existing decisions and authorization.
+- Added corporate boundaries for untrusted repository content, filesystem
+  isolation, secrets, network access, production, external mutation, shell
+  execution, and supply-chain review.
 
 The skills retain their upstream layout and references with these behavioral adaptations.
 
